@@ -54,7 +54,7 @@ class EstadoAgente(TypedDict, total=False):
 # ---------------------------------------------------------------------------
 def obter_llm():
     from langchain.chat_models import init_chat_model
-    return init_chat_model(config.LLM_MODEL, temperature=0)
+    return init_chat_model(config.LLM_MODEL)
 
 
 # ---------------------------------------------------------------------------
