@@ -1,0 +1,112 @@
+{
+  "name": "Alerta de Estoque Crítico (Agente LangGraph)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Executar manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "rule": { "interval": [ { "triggerAtHour": 8 } ] }
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Todo dia às 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8001/analisar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"pergunta\": \"Liste todos os produtos com estoque BAIXO ou ESGOTADO e quanto falta para o mínimo.\"\n}",
+        "options": { "timeout": 90000 }
+      },
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Chamar agente Python",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            {
+              "id": "c0ffee00-0001-4000-8000-000000000001",
+              "leftValue": "={{ $json.tem_alerta }}",
+              "rightValue": "",
+              "operator": { "type": "boolean", "operation": "true", "singleValue": true }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "name": "Tem alerta?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [520, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transforma a resposta do agente em uma linha por produto crítico\nconst r = $input.first().json;\nconst agora = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });\nreturn r.alertas.map(a => ({\n  json: {\n    data_verificacao: agora,\n    codigo: a.codigo,\n    produto: a.nome,\n    quantidade_atual: a.quantidade_atual,\n    estoque_minimo: a.estoque_minimo,\n    situacao: a.situacao,\n    repor_ao_menos: a.falta_para_minimo,\n    prioridade: a.situacao === 'ESGOTADO' ? 'ALTA' : 'MÉDIA'\n  }\n}));"
+      },
+      "id": "a1b2c3d4-0005-4000-8000-000000000005",
+      "name": "Montar lista de reposição",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "options": { "fileName": "=alerta_estoque_{{ $now.toFormat('yyyy-LL-dd_HHmm') }}.csv" }
+      },
+      "id": "a1b2c3d4-0006-4000-8000-000000000006",
+      "name": "Gerar CSV de reposição",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [1040, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "d00d0000-0001-4000-8000-000000000001", "name": "mensagem", "value": "Nenhum produto crítico na verificação.", "type": "string" },
+            { "id": "d00d0000-0002-4000-8000-000000000002", "name": "resposta_agente", "value": "={{ $json.resposta }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0007-4000-8000-000000000007",
+      "name": "Estoque OK",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [780, 220]
+    }
+  ],
+  "connections": {
+    "Executar manualmente": { "main": [ [ { "node": "Chamar agente Python", "type": "main", "index": 0 } ] ] },
+    "Todo dia às 8h": { "main": [ [ { "node": "Chamar agente Python", "type": "main", "index": 0 } ] ] },
+    "Chamar agente Python": { "main": [ [ { "node": "Tem alerta?", "type": "main", "index": 0 } ] ] },
+    "Tem alerta?": {
+      "main": [
+        [ { "node": "Montar lista de reposição", "type": "main", "index": 0 } ],
+        [ { "node": "Estoque OK", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Montar lista de reposição": { "main": [ [ { "node": "Gerar CSV de reposição", "type": "main", "index": 0 } ] ] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "meta": { "templateCredsSetupCompleted": true }
+}
