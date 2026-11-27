@@ -22,7 +22,10 @@ def usar_api_falsa():
 
 # ---------------- Regra de negócio ----------------
 @pytest.mark.parametrize("qtd,minimo,esperado", [
-    (0, 20, "ESGOTADO"), (5, 10, "BAIXO"), (30, 30, "BAIXO"), (40, 15, "NORMAL"), (0, 0, "ESGOTADO"),
+    (0, 20, "ESGOTADO"), (0, 0, "ESGOTADO"),
+    (3, 8, "CRITICO"), (4, 10, "CRITICO"),          # abaixo da metade do mínimo
+    (5, 10, "BAIXO"), (30, 30, "BAIXO"),             # da metade até o mínimo
+    (40, 15, "NORMAL"), (1, 0, "NORMAL"),
 ])
 def test_classificacao(qtd, minimo, esperado):
     assert ferramentas.classificar_situacao(qtd, minimo) == esperado

@@ -36,11 +36,14 @@ def _cliente() -> httpx.Client:
 def classificar_situacao(quantidade_atual: int, estoque_minimo: int) -> str:
     """Decisão de projeto (documentada no README):
     - ESGOTADO: quantidade = 0
-    - BAIXO:    0 < quantidade <= mínimo  (estar exatamente no mínimo já pede reposição)
+    - CRITICO:  abaixo da metade do mínimo (risco de parar a operação)
+    - BAIXO:    da metade até o mínimo (estar no mínimo já pede reposição)
     - NORMAL:   quantidade > mínimo
     """
     if quantidade_atual == 0:
         return "ESGOTADO"
+    if quantidade_atual * 2 < estoque_minimo:  # o mesmo que qtd < 50% do mínimo, sem usar decimais
+        return "CRITICO"
     if quantidade_atual <= estoque_minimo:
         return "BAIXO"
     return "NORMAL"
@@ -111,7 +114,7 @@ def listar_produtos_api(categoria: Optional[str] = None) -> dict:
     except (ValueError, KeyError, AttributeError) as e:
         return _erro("resposta_invalida", str(e))
 
-    resumo = {"NORMAL": 0, "BAIXO": 0, "ESGOTADO": 0}
+    resumo = {"NORMAL": 0, "BAIXO": 0, "CRITICO": 0, "ESGOTADO": 0}
     for p in produtos:
         resumo[p["situacao"]] += 1
     return {"ok": True, "total": len(produtos), "resumo": resumo,
@@ -141,14 +144,14 @@ def cadastrar_produto_api(dados: dict) -> dict:
 def consultar_produto(codigo: str) -> dict:
     """Consulta UM produto pelo código (formato PRD-XXX, ex.: PRD-001).
     Retorna nome, quantidade_atual, estoque_minimo e a situacao já calculada
-    (NORMAL, BAIXO ou ESGOTADO). Use quando o usuário citar um código específico."""
+    (NORMAL, BAIXO, CRITICO ou ESGOTADO). Use quando o usuário citar um código específico."""
     return consultar_produto_api(codigo)
 
 
 @tool
 def listar_produtos(categoria: Optional[str] = None) -> dict:
     """Lista todos os produtos (ou só de uma categoria, ex.: 'Periféricos'),
-    com a situação de cada um e um resumo de quantos estão NORMAL, BAIXO e ESGOTADO.
+    com a situação de cada um e um resumo de quantos estão NORMAL, BAIXO, CRITICO e ESGOTADO.
     Use para perguntas gerais: 'o que está acabando?', 'relatório do estoque',
     ou quando o usuário citar um produto pelo NOME em vez do código."""
     return listar_produtos_api(categoria)

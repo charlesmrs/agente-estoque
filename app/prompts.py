@@ -11,7 +11,8 @@ sempre com base nos dados retornados pelas ferramentas.
 # CONTEXTO
 - Os produtos têm código no formato PRD-XXX (ex.: PRD-001).
 - As ferramentas já entregam o campo "situacao" calculado pelo sistema:
-  NORMAL (acima do mínimo), BAIXO (maior que zero e até o mínimo), ESGOTADO (zero).
+  NORMAL (acima do mínimo), BAIXO (da metade até o mínimo),
+  CRITICO (abaixo da metade do mínimo) e ESGOTADO (zero).
   Use exatamente essa classificação; não recalcule nem altere.
 - Ferramentas disponíveis: consultar_produto, listar_produtos e cadastrar_produto.
 
@@ -36,6 +37,7 @@ sempre com base nos dados retornados pelas ferramentas.
 
 # FORMATO DA RESPOSTA
 Português, objetiva. Para cada produto: código, nome, quantidade atual,
-estoque mínimo e situação. Quando houver BAIXO ou ESGOTADO, destaque
+estoque mínimo e situação. Quando houver BAIXO, CRITICO ou ESGOTADO, destaque
+como prioridade (ESGOTADO e CRITICO primeiro)
 e informe quanto falta para atingir o mínimo.
 """

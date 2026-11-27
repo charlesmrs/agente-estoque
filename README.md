@@ -50,9 +50,12 @@ Pergunta ─► validar_entrada ─► agente (LLM) ─┬─► ferramentas ─
 | Condição | Situação |
 |---|---|
 | `quantidade_atual == 0` | ESGOTADO |
-| `0 < quantidade_atual <= estoque_minimo` | BAIXO (estar no mínimo já pede reposição) |
+| `quantidade_atual < 50% do estoque_minimo` | CRITICO (risco de parar a operação; prioridade de compra) |
+| `50% do mínimo <= quantidade_atual <= estoque_minimo` | BAIXO (estar no mínimo já pede reposição) |
 | `quantidade_atual > estoque_minimo` | NORMAL |
 
+Com a base do professor: 5 NORMAL, 3 BAIXO (PRD-001, PRD-005, PRD-009), 2 CRITICO (PRD-007, PRD-011) e 2 ESGOTADO (PRD-004, PRD-008).
+O nível CRITICO vem da lógica de manutenção industrial: abaixo da metade do mínimo, o risco de faltar a peça antes da reposição chegar é alto.
 **Falhas tratadas:** código inválido (validado antes da chamada HTTP), 404 produto inexistente, 503 serviço indisponível, API desligada, timeout, resposta com campos faltando ou valores inválidos.
 
 ## 4. Como executar
@@ -99,7 +102,7 @@ Evidência: `evidencias/n8n_execucao.png` `[adicionar print]`.
 ## 6. Testes
 
 ```bash
-python -m pytest -v                 # 17 testes, sem LLM e sem API (usa simuladores)
+python -m pytest -v                 # 20 testes, sem LLM e sem API (usa simuladores)
 python -m testes.executar_cenarios  # cenários com LLM e API reais -> evidencias/
 ```
 
