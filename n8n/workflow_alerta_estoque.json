@@ -1,0 +1,224 @@
+{
+  "name": "Alerta de Estoque Crítico (Agente LangGraph)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "722ef35f-bd70-4532-9477-ce7e13470f98",
+      "name": "Executar manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "356082c2-911b-4f94-8d12-9d3490403245",
+      "name": "Todo dia às 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8001/analisar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"pergunta\": \"Liste todos os produtos com estoque BAIXO, CRITICO ou ESGOTADO e quanto falta para o mínimo.\"\n}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "c250ae35-4085-48de-9ca8-c34dce39e024",
+      "name": "Chamar agente Python",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        608,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c0ffee00-0001-4000-8000-000000000001",
+              "leftValue": "={{ $json.tem_alerta }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "74082145-6a75-4aad-b42b-b4b9ff2f185a",
+      "name": "Tem alerta?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        864,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transforma a resposta do agente em uma linha por produto crítico\nconst r = $input.first().json;\nconst agora = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });\nreturn r.alertas.map(a => ({\n  json: {\n    data_verificacao: agora,\n    codigo: a.codigo,\n    produto: a.nome,\n    quantidade_atual: a.quantidade_atual,\n    estoque_minimo: a.estoque_minimo,\n    situacao: a.situacao,\n    repor_ao_menos: a.falta_para_minimo,\n    prioridade: ['ESGOTADO', 'CRITICO'].includes(a.situacao) ? 'ALTA' : 'MÉDIA'\n  }\n}));"
+      },
+      "id": "44a806bd-a6dd-43d9-97d4-3a1a2c2ab845",
+      "name": "Montar lista de reposição",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "=alerta_estoque_{{ $now.toFormat('yyyy-LL-dd_HHmm') }}.csv"
+        }
+      },
+      "id": "f3f06e88-d6dd-4447-95c9-47b954691659",
+      "name": "Gerar CSV de reposição",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1376,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d00d0000-0001-4000-8000-000000000001",
+              "name": "mensagem",
+              "value": "Nenhum produto crítico na verificação.",
+              "type": "string"
+            },
+            {
+              "id": "d00d0000-0002-4000-8000-000000000002",
+              "name": "resposta_agente",
+              "value": "={{ $json.resposta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5aa533a2-67d4-4068-8717-3ead41228a92",
+      "name": "Estoque OK",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        144
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Executar manualmente": {
+      "main": [
+        [
+          {
+            "node": "Chamar agente Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Todo dia às 8h": {
+      "main": [
+        [
+          {
+            "node": "Chamar agente Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chamar agente Python": {
+      "main": [
+        [
+          {
+            "node": "Tem alerta?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem alerta?": {
+      "main": [
+        [
+          {
+            "node": "Montar lista de reposição",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Estoque OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar lista de reposição": {
+      "main": [
+        [
+          {
+            "node": "Gerar CSV de reposição",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "83ee5a21-bc38-4296-b136-2dd182f4d91f",
+  "meta": {
+    "instanceId": "2ce38754dd1270f2ba92bf28608d4e51cbdafaeee8db22b2b40583ffc4ef1640"
+  },
+  "nodeGroups": [],
+  "id": "JbI51VEnL91Tj88Z",
+  "tags": []
+}
