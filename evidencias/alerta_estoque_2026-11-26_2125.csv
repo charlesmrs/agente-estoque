@@ -1,0 +1,8 @@
+﻿data_verificacao,codigo,produto,quantidade_atual,estoque_minimo,situacao,repor_ao_menos,prioridade
+"26/11/2026, 23:25:32",PRD-001,Mouse sem fio,5,10,BAIXO,5,MÉDIA
+"26/11/2026, 23:25:32",PRD-004,Cabo HDMI 2 m,0,20,ESGOTADO,20,ALTA
+"26/11/2026, 23:25:32",PRD-005,Papel sulfite A4,30,30,BAIXO,0,MÉDIA
+"26/11/2026, 23:25:32",PRD-007,Cartucho de tinta preta,3,8,CRITICO,5,ALTA
+"26/11/2026, 23:25:32",PRD-008,Webcam Full HD,0,5,ESGOTADO,5,ALTA
+"26/11/2026, 23:25:32",PRD-009,Notebook 14 polegadas,8,8,BAIXO,0,MÉDIA
+"26/11/2026, 23:25:32",PRD-011,Álcool isopropílico,4,10,CRITICO,6,ALTA
