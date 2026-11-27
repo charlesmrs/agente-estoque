@@ -1,0 +1,32 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.2.0, pluggy-1.7.0 -- C:\Projetos\agentes-ia\agente-estoque\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projetos\agentes-ia\agente-estoque
+configfile: pytest.ini
+testpaths: testes
+plugins: anyio-4.16.0, langsmith-0.16.2
+collecting ... collected 21 items
+
+testes/test_agente.py::test_classificacao[0-20-ESGOTADO] PASSED          [  4%]
+testes/test_agente.py::test_classificacao[0-0-ESGOTADO] PASSED           [  9%]
+testes/test_agente.py::test_classificacao[3-8-CRITICO] PASSED            [ 14%]
+testes/test_agente.py::test_classificacao[4-10-CRITICO] PASSED           [ 19%]
+testes/test_agente.py::test_classificacao[5-10-BAIXO] PASSED             [ 23%]
+testes/test_agente.py::test_classificacao[30-30-BAIXO] PASSED            [ 28%]
+testes/test_agente.py::test_classificacao[40-15-NORMAL] PASSED           [ 33%]
+testes/test_agente.py::test_classificacao[1-0-NORMAL] PASSED             [ 38%]
+testes/test_agente.py::test_consulta_existente PASSED                    [ 42%]
+testes/test_agente.py::test_codigo_invalido_nem_chama_api PASSED         [ 47%]
+testes/test_agente.py::test_produto_inexistente PASSED                   [ 52%]
+testes/test_agente.py::test_servico_indisponivel PASSED                  [ 57%]
+testes/test_agente.py::test_api_desligada PASSED                         [ 61%]
+testes/test_agente.py::test_cenario1_usa_ferramenta PASSED               [ 66%]
+testes/test_agente.py::test_cenario3_pergunta_conceitual_sem_ferramenta PASSED [ 71%]
+testes/test_agente.py::test_entrada_vazia_bloqueada_sem_llm PASSED       [ 76%]
+testes/test_agente.py::test_anti_alucinacao_marca_codigo_sem_fonte PASSED [ 80%]
+testes/test_agente.py::test_exemplo_de_formato_nao_dispara_aviso PASSED  [ 85%]
+testes/test_agente.py::test_condicao_de_parada PASSED                    [ 90%]
+testes/test_agente.py::test_cadastro_negado_em_modo_automatico PASSED    [ 95%]
+testes/test_agente.py::test_cadastro_com_aprovacao_humana PASSED         [100%]
+
+============================= 21 passed in 0.73s ==============================
