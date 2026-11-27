@@ -153,8 +153,10 @@ def finalizar(estado: EstadoAgente) -> dict:
         return {}
     resposta = _texto(estado["messages"][-1]).strip() or "Não consegui gerar uma resposta."
 
-    # Todo código PRD-XXX citado deve ter vindo da API ou da própria pergunta
-    citados = set(re.findall(r"PRD-\d{3}", resposta))
+    # Todo código PRD-XXX citado deve ter vindo da API ou da própria pergunta.
+    # Códigos usados só como exemplo de formato ("ex.: PRD-001") não contam.
+    sem_exemplos = re.sub(r"(ex\.?:?|exemplo:?)\s*PRD-\d{3}", "", resposta, flags=re.IGNORECASE)
+    citados = set(re.findall(r"PRD-\d{3}", sem_exemplos))
     conhecidos = set(estado.get("produtos_consultados", {})) | set(
         re.findall(r"PRD-\d{3}", (estado.get("pergunta") or "").upper()))
     sem_fonte = citados - conhecidos

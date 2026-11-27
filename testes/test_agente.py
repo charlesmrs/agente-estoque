@@ -91,6 +91,12 @@ def test_anti_alucinacao_marca_codigo_sem_fonte():
     assert "PRD-777" in estado["resposta_final"] and "Aviso de verificação" in estado["resposta_final"]
 
 
+def test_exemplo_de_formato_nao_dispara_aviso():
+    llm = LLMRoteirizado([AIMessage("Qual produto? Informe o código (ex.: PRD-001) ou o nome.")])
+    _, estado = executar(llm, "Como está aquele produto?")
+    assert "Aviso de verificação" not in estado["resposta_final"]
+
+
 def test_condicao_de_parada(monkeypatch):
     monkeypatch.setattr(config, "MAX_PASSOS", 2)
     llm = LLMRoteirizado([chamada_tool("listar_produtos", {}, f"c{i}") for i in range(10)])

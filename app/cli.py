@@ -28,21 +28,44 @@ def perguntar(grafo, pergunta: str) -> dict:
     return resumo_execucao(estado)
 
 
+def perguntar_com_seguranca(grafo, pergunta: str) -> dict | None:
+    """Executa o agente e transforma falhas do LLM em mensagem amigável (sem traceback)."""
+    try:
+        return perguntar(grafo, pergunta)
+    except KeyboardInterrupt:
+        raise
+    except Exception as e:
+        nome = type(e).__name__
+        if "Connection" in nome or "Timeout" in nome:
+            motivo = "não foi possível conectar ao serviço do LLM (verifique a internet)."
+        elif "Authentication" in nome or "Permission" in nome:
+            motivo = "a chave da API foi recusada (confira ANTHROPIC_API_KEY no .env)."
+        elif "RateLimit" in nome:
+            motivo = "limite de uso da API atingido; aguarde e tente de novo."
+        else:
+            motivo = f"erro inesperado ao consultar o LLM ({nome})."
+        print(f"\n⚠️  O agente não conseguiu responder: {motivo}")
+        print("Nenhum dado foi inventado e nenhuma alteração foi feita.")
+        return None
+
+
 def main():
     grafo = construir_grafo(checkpointer=MemorySaver())
     if len(sys.argv) > 1:
-        r = perguntar(grafo, " ".join(sys.argv[1:]))
-        print(r["resposta"])
-        print("\n[ferramentas]", r["ferramentas_usadas"] or "nenhuma")
+        r = perguntar_com_seguranca(grafo, " ".join(sys.argv[1:]))
+        if r:
+            print(r["resposta"])
+            print("\n[ferramentas]", r["ferramentas_usadas"] or "nenhuma")
         return
     print("Analista de Estoque — digite 'sair' para encerrar.")
     while True:
         pergunta = input("\nVocê: ").strip()
         if pergunta.lower() in ("sair", "exit", "quit"):
             break
-        r = perguntar(grafo, pergunta)
-        print(f"\nAgente: {r['resposta']}")
-        print(f"[ferramentas: {r['ferramentas_usadas'] or 'nenhuma'} | passos LLM: {r['passos_llm']}]")
+        r = perguntar_com_seguranca(grafo, pergunta)
+        if r:
+            print(f"\nAgente: {r['resposta']}")
+            print(f"[ferramentas: {r['ferramentas_usadas'] or 'nenhuma'} | passos LLM: {r['passos_llm']}]")
 
 
 if __name__ == "__main__":
