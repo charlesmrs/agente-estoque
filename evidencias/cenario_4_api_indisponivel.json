@@ -1,0 +1,16 @@
+{
+  "cenario": "4_api_indisponivel",
+  "entrada": "Como está o estoque do PRD-503?",
+  "esperado": "Recebe 503 e avisa que o serviço está indisponível, sem chutar valores.",
+  "observado": {
+    "resposta": "Não consegui consultar o PRD-503 agora, porque a API de estoque está temporariamente indisponível. Não tenho a quantidade nem a situação desse produto no momento. Tente novamente em alguns minutos.",
+    "ferramentas_usadas": [
+      "consultar_produto({\"codigo\": \"PRD-503\"}) -> servico_indisponivel"
+    ],
+    "passos_llm": 2,
+    "alertas": [],
+    "tem_alerta": false
+  },
+  "resultado": "PASSOU",
+  "timestamp": "2026-11-27T17:26:09"
+}

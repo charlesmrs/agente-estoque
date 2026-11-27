@@ -1,0 +1,16 @@
+{
+  "cenario": "2_produto_inexistente",
+  "entrada": "Quantas unidades temos do PRD-999?",
+  "esperado": "Consulta a API, recebe 404 e informa que o produto não existe, sem inventar quantidade.",
+  "observado": {
+    "resposta": "Não encontrei nenhum produto com o código PRD-999. Confira se o código está correto (formato PRD-XXX, ex.: PRD-001). Se preferir, posso buscar pelo nome do produto.",
+    "ferramentas_usadas": [
+      "consultar_produto({\"codigo\": \"PRD-999\"}) -> produto_nao_encontrado"
+    ],
+    "passos_llm": 2,
+    "alertas": [],
+    "tem_alerta": false
+  },
+  "resultado": "PASSOU",
+  "timestamp": "2026-11-27T17:26:05"
+}

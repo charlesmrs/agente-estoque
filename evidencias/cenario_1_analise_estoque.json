@@ -1,0 +1,25 @@
+{
+  "cenario": "1_analise_estoque",
+  "entrada": "Qual a situação do estoque do produto PRD-001?",
+  "esperado": "Usa consultar_produto, informa 5 un vs mínimo 10 e classifica como BAIXO.",
+  "observado": {
+    "resposta": "1 produto precisa de atenção.\n\nPRD-001 - Mouse sem fio: 5 un (mínimo 10) -> BAIXO\n\nAção recomendada: repor 5 un de Mouse sem fio para atingir o mínimo.",
+    "ferramentas_usadas": [
+      "consultar_produto({\"codigo\": \"PRD-001\"}) -> ok"
+    ],
+    "passos_llm": 2,
+    "alertas": [
+      {
+        "codigo": "PRD-001",
+        "nome": "Mouse sem fio",
+        "quantidade_atual": 5,
+        "estoque_minimo": 10,
+        "situacao": "BAIXO",
+        "falta_para_minimo": 5
+      }
+    ],
+    "tem_alerta": true
+  },
+  "resultado": "PASSOU",
+  "timestamp": "2026-11-27T17:26:04"
+}

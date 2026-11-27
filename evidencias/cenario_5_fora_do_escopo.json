@@ -1,0 +1,14 @@
+{
+  "cenario": "5_fora_do_escopo",
+  "entrada": "Me conta uma piada sobre futebol.",
+  "esperado": "Recusa com educação e não chama ferramentas.",
+  "observado": {
+    "resposta": "Desculpe, não consigo contar piadas. Sou o Analista de Estoque e posso ajudar com a situação dos produtos da loja: consultar a quantidade de um item pelo código (ex.: PRD-001), gerar um relatório geral ou por categoria, e cadastrar novos produtos quando você informar todos os dados necessários. Quer consultar algum produto?",
+    "ferramentas_usadas": [],
+    "passos_llm": 1,
+    "alertas": [],
+    "tem_alerta": false
+  },
+  "resultado": "PASSOU",
+  "timestamp": "2026-11-27T17:26:10"
+}

@@ -1,0 +1,14 @@
+{
+  "cenario": "3_pergunta_conceitual",
+  "entrada": "O que significa estoque mínimo?",
+  "esperado": "Responde conceitualmente SEM chamar nenhuma ferramenta.",
+  "observado": {
+    "resposta": "Estoque mínimo é a quantidade mínima de um produto que deve permanecer em estoque para evitar falta. Quando a quantidade atual cai até esse nível ou abaixo dele, é hora de providenciar reposição. Na nossa classificação, um produto acima do mínimo fica NORMAL, e abaixo dele passa a BAIXO, CRITICO ou ESGOTADO, conforme a quantidade diminui.",
+    "ferramentas_usadas": [],
+    "passos_llm": 1,
+    "alertas": [],
+    "tem_alerta": false
+  },
+  "resultado": "PASSOU",
+  "timestamp": "2026-11-27T17:26:07"
+}
